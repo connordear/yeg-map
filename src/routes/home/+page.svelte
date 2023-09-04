@@ -11,6 +11,7 @@
 		<LeafletMap
 			markerLocations={data.default.map((shop) => ({
 				...shop,
+				type: 'coffee',
 				latLong: [shop.latitude || 0, shop.longitude || 0]
 			}))}
 		/>

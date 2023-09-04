@@ -3,8 +3,9 @@
 	import { onMount } from 'svelte';
 	import MapToolbar from './MapToolbar.svelte';
 	import MarkerPopup from './MarkerPopup.svelte';
-	import * as markerIcons from './markers';
-	export let markerLocations: { latLong: L.LatLngExpression; name: string }[] = [];
+	import { markerLookup } from './markers';
+	import type { MapItem } from './types';
+	export let markerLocations: MapItem[] = [];
 	let L: any;
 
 	let map: L.Map | null;
@@ -57,7 +58,7 @@
 			subdomains: 'abcd',
 			maxZoom: 18
 		}).addTo(m);
-		L.geoJSON(coeNbhd.features[0]).addTo(m);
+		// L.geoJSON(coeNbhd.features[0]).addTo(m);
 
 		return m;
 	}
@@ -84,29 +85,31 @@
 		});
 	}
 
-	function markerIcon(count: number, name?: string) {
-		let html = `<div class="map-marker"><div>${markerIcons.library}</div><div class="marker-text">${name}</div></div>`;
+	function markerIcon(mapItem: MapItem) {
+		let html = `<div class="map-marker-${mapItem.type}"><div>${
+			markerLookup[mapItem.type]
+		}</div></div>`;
 		return L.divIcon({
 			html,
-			className: 'map-marker'
+			className: `map-marker-${mapItem.type}`
 		});
 	}
 
-	function createMarker(loc: L.LatLngExpression, name?: string) {
+	function createMarker(mapItem: MapItem) {
 		let count = Math.ceil(Math.random() * 25);
-		let icon = markerIcon(count, name);
-		let marker = L.marker(loc, { icon });
+		let icon = markerIcon(mapItem);
+		let marker = L.marker(mapItem.latLong, { icon });
 		bindPopup(marker, (m) => {
 			let c = new MarkerPopup({
 				target: m,
 				props: {
-					count
+					mapItem
 				}
 			});
 
 			c.$on('change', ({ detail }) => {
 				count = detail;
-				marker.setIcon(markerIcon(count, name));
+				marker.setIcon(markerIcon(mapItem));
 			});
 
 			return c;
@@ -130,13 +133,12 @@
 		toolbar.addTo(map);
 
 		markerLayers = L.layerGroup();
-		for (let location of markerLocations) {
-			let m = createMarker(location.latLong, location.name);
+		for (let item of markerLocations) {
+			let m = createMarker(item);
 			markerLayers.addLayer(m);
 		}
 
 		markerLayers.addTo(map);
-		lineLayers.addTo(map);
 
 		return {
 			destroy: () => {
@@ -178,8 +180,12 @@
 		border-radius: 0.5rem;
 	}
 
-	.map :global(.map-marker) {
-		width: 50px;
-		transform: translateX(-50%) translateY(-25%);
+	.map :global(.map-marker-marker) {
+		height: 20px;
+		transform: translateX(-50%) translateY(-50%);
+	}
+	.map :global(.map-marker-coffee) {
+		width: 20px;
+		transform: translateX(-50%) translateY(-50%);
 	}
 </style>

@@ -1,22 +1,17 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import type { MapItem } from './types';
 	const dispatch = createEventDispatcher();
 
-	export let count: number;
-
-	function addValue(delta: number) {
-		count += delta;
-		dispatch('change', count);
-	}
+	export let mapItem: MapItem;
 </script>
 
 <div>
-	<button on:click={() => addValue(-1)}> - </button>
-	<button on:click={() => addValue(1)}> + </button>
+	<h2>{mapItem.name}</h2>
 </div>
 
 <div style="width:100%;text-align:center;font-weight:600">
-	{count}
+	{mapItem.latLong}
 </div>
 
 <style>
