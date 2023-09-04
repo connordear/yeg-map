@@ -6,7 +6,7 @@
 </script>
 
 <main>
-	<h1 class="title">YEG-MApP</h1>
+	<h1 class="title">YEG-MAP</h1>
 	<div style="width: 100%; height: 500px">
 		<LeafletMap
 			markerLocations={data.default.map((shop) => ({
